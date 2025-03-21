@@ -1,0 +1,24 @@
+{% extends 'blogs/base.html' %}
+
+{% block content %}
+
+<p><h1>Posts for {{ blog.text }}:</h1></p>
+<ul>
+  {% for bp in blog_posts %}
+    <p><h2>{{ bp }}</h2></p>
+    <h3><small>Author: {{ bp.owner }}</small></h3>
+    <p>{{ bp.text|linebreaks }}</p>
+    {% if user.is_authenticated %}
+      <small><a href="{% url 'blogs:edit_blogpost' bp.id %}">Edit Blog Post</a></small>
+    {% endif %}  
+  {% empty %}
+    <li> There are no posts for this blog yet.</li>
+  {% endfor %}
+</ul>
+<br>
+{% if user.is_authenticated %}
+  <p>
+    <a href="{% url 'blogs:new_blogpost' blog.id %}">Add a new blog post</a>
+  </p>
+{% endif %}  
+{% endblock content %}

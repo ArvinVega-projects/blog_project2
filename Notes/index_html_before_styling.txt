@@ -1,0 +1,25 @@
+{% extends 'blogs/base.html' %}
+
+{% block content %}
+<p>This is where you will blog about anything and everything you want!</p>
+
+<h1>Blogs:</h1>
+<ul>
+  {% for blog_title in blog_titles %}
+    <li>
+      <h2><a href="{% url 'blogs:blog' blog_title.id %}">
+        {{ blog_title.text }}</a></h2>
+        {% if user.is_authenticated %}
+          <p>Blog Creator: {{ blog_title.owner }}</p>
+            <small><a href="{% url 'blogs:edit_blogname' blog_title.id %}">Edit Blog Name for {{ blog_title.text }}</a></small>
+        {% endif %}
+    </li>
+  {% empty %}
+    <li>No blog posts have been added yet.</li>
+  {% endfor %}
+</ul>
+<br>
+{% if user.is_authenticated %}
+  <a href="{% url 'blogs:new_blog' %}">Add a new blog</a>
+{% endif %}
+{% endblock content %}

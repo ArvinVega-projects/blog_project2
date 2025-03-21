@@ -1,0 +1,25 @@
+{% extends "blogs/base.html" %}
+{% load django_bootstrap5 %}
+
+{% block page_header %}
+
+<h2>Register</h2>
+
+{% endblock page_header %}
+
+{% block content %}
+
+  {% if form.errors %}
+    <div class="p-1 text-danger">
+      <p class="fw-bold">There were issues registering your account. Please review the username 
+        and password requirements before trying again.</p>
+    </div>
+  {% endif %}
+
+  <form action="{% url 'accounts:register' %}" method="post">
+    {% csrf_token %}
+    {% bootstrap_form form %}
+    {% bootstrap_button button_type="submit" content="Register" %}
+  </form>
+
+{% endblock content %}

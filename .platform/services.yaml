@@ -1,0 +1,5 @@
+# Services that will be deployed in their own container as part of this project.
+
+db:
+    type: postgresql:13
+    disk: 1024
