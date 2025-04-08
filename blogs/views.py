@@ -97,7 +97,7 @@ def new_blogpost(request, blog_id):
             new_blogpost.blog = blog
             new_blogpost.owner = request.user
             new_blogpost.save()
-            return redirect('blogs:blog', blog_id=blog_id)
+            return redirect('blogs:my_blogs')
     
     context = {'blog': blog, 'form': form}
     return render(request, 'blogs/new_blogpost.html', context)
