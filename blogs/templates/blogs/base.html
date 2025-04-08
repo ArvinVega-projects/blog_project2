@@ -25,9 +25,22 @@
       <div class="collapse navbar-collapse" id="navbarCollapse">
         <ul class="navbar-nav me-auto mb-2 mb-md-0">
           {% if user.is_authenticated %}
-            <li class="nav-item">
+            {% if user.is_superuser == True %}
+              <li class="nav-item">
               <a class="nav-link" href="{% url 'blogs:new_blog' %}">
                 Create a New Blog</a></li>
+            {% endif %}
+            <li class="nav-item">
+            <a class="nav-link" href="{% url 'blogs:my_blogs' %}">
+                View My Blogs</a></li>
+            {% if user.is_superuser == True %}
+                <li class ="nav-item">
+                <a class="nav-link" href="{% url 'blogs:review_blog' %}">
+                    Review Blogs</a></li>
+                <li class="nav-item">
+                <a class="nav-link" href="{% url 'blogs:review_blogposts' %}">
+                    Review Blog Posts</a></li>
+            {% endif %}
           {% endif %}
         </ul> <!-- End of links on left sidebar -->
     

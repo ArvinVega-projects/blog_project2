@@ -5,8 +5,8 @@
     <div class="container-fluid py-4">
       <h1 class="display-3">Blog about everything you care about.</h1>
       
-      <p class="lead">Create blogs and share it with the world! Add new blog topics
-        and blog posts, or edit currently existing posts.</p>
+      <p class="lead">Create blogs and share it with the world! Add or edit blog posts,
+        and read other user's blog posts.</p>
       <!-- Show Register CTA if user not logged in. -->
       {% if user.is_authenticated %}
       {% else %}
@@ -18,24 +18,27 @@
 {% endblock page_header %}
 
 {% block content %}
-<div class="row">
-  <h2>Active Blogs</h2>
+<div class="row card-deck d-flex">
+  <h2>Published Blogs</h2>
   {% for blog_title in blog_titles %}
-    <div class="col-sm-4">
-      <div class="card mb-3">
-        <div class="card-body">
-          <h5 class="card-title">{{ blog_title.text }}</h5>
-          <h6 class="card-subtitle mb-2 text-muted">Created by: {{ blog_title.owner }}
-            on {{blog_title.date_made|date:'M d, Y'}}
-          </h6>
-          <a href="{% url 'blogs:blog' blog_title.id %}" class="btn btn-primary btn-sm">See Blog Posts</a>
-          <!-- Show Edit Blog Title button if user logged in. -->
-          {% if user.is_authenticated %}
-            <a href="{% url 'blogs:edit_blogname' blog_title.id %}" class="btn btn-primary btn-sm">Edit Blog Name</a>
-          {% endif %}
+    {% if blog_title.public == True %}
+      <div class="col-sm-4">
+        <div class="card mb-3">
+          <div class="card-body">
+            <h5 class="card-title">{{ blog_title.text }}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">Created by: {{ blog_title.owner }}
+              on {{blog_title.date_made|date:'M d, Y'}}
+            </h6>
+            <a href="{% url 'blogs:blog' blog_title.id %}" class="btn btn-primary btn-sm">See Blog Posts</a>
+            <!-- Show Edit Blog Name and Delete Blog buttons if superuser. -->
+            {% if user.is_superuser == True %}
+              <a href="{% url 'blogs:edit_blogname' blog_title.id %}" class="btn btn-primary btn-sm">Edit Blog Name</a>
+              <a href="{% url 'blogs:delete_blog' blog_title.id %}" class="btn btn-danger btn-sm">Delete Blog</a>
+            {% endif %}
+          </div>
         </div>
+    {% endif %}
       </div>
-    </div>
   {% empty %}
     <p>There are no active blogs yet.</p>
   {% endfor %}

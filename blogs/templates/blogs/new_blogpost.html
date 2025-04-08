@@ -2,14 +2,19 @@
 {% load django_bootstrap5 %}
 
 {% block page_header %}
-<h2>Add New Blog Post</h2>
+<h2>Add New Post for Blog: {{ blog.text }}</h2>
 {% endblock page_header %}
 
 {% block content %}
+<div class="text-primary">
+    <p><strong>Your post will be reviewed before it is published. You can view
+      the status of your post in "View My Blogs".
+    </strong>
+    </p>
+</div>
 <form action="{% url 'blogs:new_blogpost' blog.id %}" method="post">
   {% csrf_token %}
   {% bootstrap_form form %}
   {% bootstrap_button button_type="submit" content="Add New Blog Post" %}
 </form>
-
 {% endblock content %}

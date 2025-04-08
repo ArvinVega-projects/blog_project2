@@ -1,0 +1,34 @@
+{% extends "blogs/base.html" %}
+
+{% block page_header %}
+  <h2>Review Blog Posts</h2>
+{% endblock page_header %}
+
+{% block content %}
+<p><strong>The following blog posts are ready to be published:</strong></p>
+
+{% for bp in blog_posts %}
+  <div class="card mb-3">
+    <h5 class="card-header">
+      {{ bp.title }}
+        <a href="{% url 'blogs:publish_blog_post' bp.id %}"
+          class="btn btn-success btn-sm">Push Live</a>
+    <div class="card-subtitle">
+      <sub>This Blog Post will be published under: {{ bp.blog_to_post_under }}</sub>
+    </div>
+    </h5>
+    <div class="card-body">{{ bp.text|linebreaks }}</div>
+      <div class="card-footer">
+        <p class="card-text text-muted">
+          <small>
+            Author: {{ bp.owner }} | Last Updated: {{ bp.date_updated|date:'M d, Y H:i' }}
+          </small>
+        </p>
+      </div>
+    </div>
+</div>
+{% empty %}
+<p>There are no blog posts to review!</p>
+{% endfor %}
+
+{% endblock content %}

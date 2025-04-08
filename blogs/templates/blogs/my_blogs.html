@@ -1,0 +1,52 @@
+{% extends "blogs/base.html" %}
+
+{% block page_header %}
+<h2>My Blogs</h2>
+{% endblock page_header %}
+
+{% block content %}
+  {% for blog in blogs %}
+    {% for bp in blog_posts %}
+      {% if bp.blog_to_post_under == blog %}
+        {% if request.user == bp.owner %}
+          <div class="card mb-3">
+            <div class="card-header d-flex"><h5>Blog Post: {{ bp.title }}</h5>
+              <span class="ms-auto text-muted">
+                <div class="user-action-buttons">
+                  <a href="{% url 'blogs:edit_blogpost' bp.id %}" class="btn btn-warning btn-sm">Edit Blog Post</a>
+                  <a href="{% url 'blogs:delete_post' bp.id %}" class="btn btn-danger btn-sm">Delete Blog Post</a>
+                </div>
+              </span>
+            </div>
+            <div class="card-body">
+              {{ bp.text|linebreaks }}
+            </div>
+            <div class="card-footer d-flex">
+              <small>Under Blog:
+                <a href="{% url 'blogs:blog' blog.id%}"
+                  class="btn btn-primary btn-sm">{{ blog.text }}</a>
+              </small>
+              <p class="card-text text-muted ms-auto">
+                <small>
+                Date Created: {{ bp.date_made|date:'M d, Y H:i' }}
+                </small>
+              </p>
+              {% if bp.public == False %}
+                {% if user.is_superuser == True%}
+                  <span class="ms-auto"><a href="{% url 'blogs:publish_blog_post' bp.id %}" 
+                    class="btn btn-success btn-sm">Push Live</a></span>
+                {% else %}
+                  <span class="ms-auto text-muted"><small>This post is under review.</small></span>  
+                {% endif %}
+              {% else %}
+              <span class="ms-auto text-success"><small><strong>This post is live!</strong></small>
+              </span>  
+              {% endif %}
+            </div>
+        {% endif %}
+      {% endif %}  
+          </div>
+    {% endfor %}
+  {% endfor %}
+
+{% endblock content %}

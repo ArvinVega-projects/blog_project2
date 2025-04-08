@@ -8,6 +8,9 @@
 
 {% block content %}
 <p>Return to <a href="{% url 'blogs:blog' blog.id %}">{{ blog }}</a></p>
+<div class="text-danger">
+  <p><strong>NOTE! Your edits will be reviewed before the updated post is published.</strong></p>
+</div>
 
 <form action="{% url 'blogs:edit_blogpost' blogpost.id  %}" method="post">
   {% csrf_token %}

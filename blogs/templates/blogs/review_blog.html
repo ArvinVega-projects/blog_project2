@@ -1,0 +1,22 @@
+
+{% extends "blogs/base.html" %}
+
+{% block page_header %}
+  <h2>Review Blogs</h2>
+{% endblock page_header %}
+
+{% block content %}
+<p><strong>The following blogs are ready to be published on the website:</strong></p>
+
+<ul class="list-group border-bottom pb-2 mb-4">
+    {% for blog in blogs %}
+      <li class="list-group-item border-0">
+        {{ blog.text }}
+        <a href="{% url 'blogs:publish_blog' blog.id %}"
+          class="btn btn-success btn-sm">Push Live</a>
+      </li>
+    {% empty %}
+      <li class="list-group-item border-0">No blogs to review.</li>
+    {% endfor %}
+
+{% endblock content %}
