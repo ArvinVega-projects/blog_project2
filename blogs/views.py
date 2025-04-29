@@ -1,15 +1,10 @@
-import copy
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.http import Http404
+import functions as f
 
 from .models import Blog, BlogPost
 from .forms import BlogForm, BlogPostForm
 # Create your views here.
-
-def check_admin(user):
-    """Check if user is a superuser."""
-    return user.is_superuser
 
 def index(request):
     """Home page for Blogs. Public Blog Topics will appear here."""
@@ -20,7 +15,7 @@ def index(request):
 
 # Send non-superusers to home page if trying to access review_blog.
 # login_url="/" is the syntax to redirect to homepage instead of login page.
-@user_passes_test(check_admin, login_url="/", redirect_field_name=None)
+@user_passes_test(f.check_admin, login_url="/", redirect_field_name=None)
 def review_blog(request):
     """Admin only page. This shows all blogs that aren't
     published yet."""
@@ -28,14 +23,14 @@ def review_blog(request):
     context = {'blogs': blogs}
     return render(request, 'blogs/review_blog.html', context)
 
-@user_passes_test(check_admin, login_url="/", redirect_field_name=None)
+@user_passes_test(f.check_admin, login_url="/", redirect_field_name=None)
 def review_blogposts(request):
     """Admin only page. This shows all blogposts that aren't published yet."""
     blog_posts = BlogPost.objects.filter(public=False)
     context = {'blog_posts': blog_posts}
     return render(request, 'blogs/review_blogposts.html', context)
 
-@user_passes_test(check_admin, login_url="/", redirect_field_name=None)
+@user_passes_test(f.check_admin, login_url="/", redirect_field_name=None)
 def publish_blog(request, blog_id):
     """Admin only page. This page confirms the publishing of a blog."""
     blog = Blog.objects.get(id=blog_id)
@@ -44,7 +39,7 @@ def publish_blog(request, blog_id):
     context = {'blog': blog}
     return render(request, 'blogs/publish_blog.html', context)
 
-@user_passes_test(check_admin, login_url="/", redirect_field_name=None)
+@user_passes_test(f.check_admin, login_url="/", redirect_field_name=None)
 def publish_blog_post(request, blog_post_id):
     """Admin only page. This page confirms the publishing of a blog post."""
     bp = BlogPost.objects.get(id=blog_post_id)
@@ -57,12 +52,12 @@ def publish_blog_post(request, blog_post_id):
 def blog(request, blog_id):
     """The page to display a specific blog and its posts."""
     blog = Blog.objects.get(id=blog_id)
-    check_if_live(blog) # Raise 404 if blog isn't live.
+    f.check_if_live(blog) # Raise 404 if blog isn't live.
     blog_posts = blog.blogpost_set.order_by('-date_made')
     context = {'blog': blog, 'blog_posts': blog_posts}
     return render(request, 'blogs/blog.html', context)
 
-@user_passes_test(check_admin, login_url="/", redirect_field_name=None)
+@user_passes_test(f.check_admin, login_url="/", redirect_field_name=None)
 def new_blog(request):
     """Admin only page. Add a new blog topic."""
     if request.method != 'POST':
@@ -102,7 +97,7 @@ def new_blogpost(request, blog_id):
     context = {'blog': blog, 'form': form}
     return render(request, 'blogs/new_blogpost.html', context)
 
-@user_passes_test(check_admin, login_url="/", redirect_field_name=None)
+@user_passes_test(f.check_admin, login_url="/", redirect_field_name=None)
 def edit_blogname(request, blog_id):
     """Admin only. Edit an existing blog name."""
     blog = Blog.objects.get(id=blog_id)
@@ -126,7 +121,7 @@ def edit_blogpost(request, blog_post_id):
     blogpost = BlogPost.objects.get(id=blog_post_id)
     blog = blogpost.blog_to_post_under
     # If request user does not match blog owner, raise 404 exception.
-    check_blog_owner(blogpost, request.user)
+    f.check_blog_owner(blogpost, request.user)
 
     if request.method != 'POST':
         # Initial request; pre-fill form with current entry.
@@ -155,7 +150,7 @@ def my_blogs(request):
     context = {'blogs': blogs, 'blog_posts': blog_posts, 'user': user}
     return render(request, 'blogs/my_blogs.html', context)
 
-@user_passes_test(check_admin, login_url="/", redirect_field_name=None)
+@user_passes_test(f.check_admin, login_url="/", redirect_field_name=None)
 def delete_blog(request, blog_id):
     """Page to delete a specific blog and all associated posts."""
     blog = Blog.objects.get(id=blog_id)
@@ -173,7 +168,7 @@ def delete_post(request, blog_post_id):
     """Page for current user to delete their specific blog post."""
     post = BlogPost.objects.get(id=blog_post_id)
     blog = post.blog_to_post_under # Retrieve associated blog for redirect.
-    check_blog_owner(post, request.user)
+    f.check_blog_owner(post, request.user)
 
     if request.method == 'POST':
         post.delete()
@@ -182,21 +177,3 @@ def delete_post(request, blog_post_id):
     context = {'post': post}
 
     return render(request, 'blogs/delete_post.html', context)
-
-
-# Functions associated with above views.
-def check_blog_owner(blog, user):
-    """
-    Check if blog owner matches request user. If not, raise 404
-    exception.
-    """
-    if blog.owner != user:
-        raise Http404
-
-def check_if_live(blog_or_blogpost):
-    """
-    Check if a blog is live. If not, raise 404 error. This will be used for
-    blog so that getting URLs for unpublished blogs will raise exception.
-    """
-    if blog_or_blogpost.public == False:
-        raise Http404
