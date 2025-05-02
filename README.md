@@ -10,6 +10,16 @@ $ pip install --upgrade pip
 $ pip install django
 ```
 
+## Bootstrap:
+```
+$ pip install django-bootstrap5
+```
+Add the following to INSTALLED_APPS in settings.py:
+```
+# Third party apps.
+'django_bootstrap5',
+```
+
 ## Platform.sh:
 ```
 A free trial account can be created on the Platform.sh website.
